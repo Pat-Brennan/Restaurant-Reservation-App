@@ -23,11 +23,19 @@ function Dashboard({ date }) {
     return () => abortController.abort();
   }
 
+
+
   return (
     <main>
       <h1>Dashboard</h1>
       <div className="d-md-flex mb-3">
         <h4 className="mb-0">Reservations for date</h4>
+      </div>
+      
+      <div>
+        <input type="button" value="next" name="next" />
+        <input type="button" value="previous" name="previous" />
+        <input type="button" value="today" name="today" />
       </div>
       <ErrorAlert error={reservationsError} />
       {JSON.stringify(reservations)}
