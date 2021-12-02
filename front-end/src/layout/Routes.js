@@ -36,6 +36,9 @@ function Routes() {
       <Route path="/tables/new">
         <CreateTable />
       </Route>
+      <Route path="/reservations/:reservation_id/seat">
+        <Dashboard date={today()} />
+      </Route>
       <Route>
         <NotFound />
       </Route>

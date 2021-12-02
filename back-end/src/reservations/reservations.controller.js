@@ -74,12 +74,28 @@ function validateData(req, res, next) {
   if (!data.reservation_time || !isValidTime(data.reservation_time)) {
     errors.push("Request is missing reservation_time")
   }
+  if (data.status === "seated" || data.status === "finished") {
+    errors.push(`Status cannot equal ${data.status}. Status must be 'booked'`)
+  }
   if (errors.length === 0) {
     return next();
   }
   next({
     status: 400,
     message: errors.join("; ")
+  })
+}
+
+async function reservationExists(req, res, next) {
+  const id = req.params.reservation_id;
+  const foundReservation = await service.read(id);
+  if (foundReservation) {
+      res.locals.reservation = foundReservation;
+      return next();
+  } 
+  next({
+      status: 404,
+      message: `Table with id: ${id} not found.`
   })
 }
 
@@ -97,7 +113,13 @@ async function create(req, res) {
   res.status(201).json({ data: data[0] });
 }
 
+function read(req, res) {
+  const reservation = res.locals.reservation;
+  res.json({ data: reservation });
+}
+
 module.exports = {
   list: [asyncErrorBoundary(list)],
   create: [hasData, validateData, asyncErrorBoundary(create)],
+  read: [asyncErrorBoundary(reservationExists), read],
 };

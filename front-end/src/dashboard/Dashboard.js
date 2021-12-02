@@ -3,7 +3,8 @@ import { listReservations, listTables } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import useQuery from "../utils/useQuery";
 import { next, previous } from "../utils/date-time";
-import { useHistory } from "react-router-dom";
+import { useHistory, Route, Switch } from "react-router-dom";
+import SeatReservation from "../reservations/SeatReservation"
 
 /**
  * Defines the dashboard page.
@@ -28,6 +29,7 @@ function Dashboard({ date }) {
   function loadDashboard() {
     const abortController = new AbortController();
     setReservationsError(null);
+    setTablesError(null);
     listReservations({ date }, abortController.signal)
       .then(setReservations)
       .catch(setReservationsError);
@@ -40,36 +42,41 @@ function Dashboard({ date }) {
 
 
   return (
-    <main>
-      <h1>Dashboard</h1>
-      <div className="d-md-flex mb-3">
-        <h4 className="mb-0">Reservations for date</h4>
-      </div>
-      {reservations.length === 0
-        ? <h3>You fucked up</h3>
-        : <ol>
-          {reservations.map(r => {
-            return (
-              <li key={r.reservation_id}>
-                <p>{r.first_name} {r.last_name}</p>
-                <p>{r.mobile_number}</p>
-                <p>{r.reservation_date}</p>
-                <p>{r.reservation_time}</p>
-                <p>{r.people }</p>
-              </li>
-            )
-          })}
-        </ol>
-      }
-      
-      
+    <Switch>
+      <Route exact={true} path="/dashboard">
+        <main>
+          <h1>Dashboard</h1>
+          <div className="d-md-flex mb-3">
+            <h4 className="mb-0">Reservations for date: { date }</h4>
+          </div>
+          <ErrorAlert error={reservationsError} />
+          {reservations.length === 0
+            ? <h3>You fucked up</h3>
+            : <ol>
+            {reservations.map(r => {
+              return (
+                <li key={r.reservation_id}>
+                  <p>{r.first_name} {r.last_name}</p>
+                  <p>{r.mobile_number}</p>
+                  <p>{r.reservation_date}</p>
+                  <p>{r.reservation_time}</p>
+                  <p>{r.people}</p>
+                  <a href={`/reservations/${r.reservation_id}/seat`}>
+                    <button type="buttton" className="btn btn-secondary">
+                      Seat
+                      </button>
+                  </a>
+                  </li>
+                )
+              })}
+          </ol>
+          }
       <div>
         <button type="button" className="btn btn-secondary" onClick={() => history.push(`/dashboard?date=${previous(date)}`)}>Previous</button>
         <button type="button" className="btn btn-secondary" onClick={() => history.push(`/dashboard?date=${next(date)}`)}>Next</button>
         <button type="button" className="btn btn-secondary" onClick={() => history.push(`/dashboard`)}>Today</button>
       </div>
-      <ErrorAlert error={reservationsError} />
-
+      <ErrorAlert error={tablesError} />
       {tables.length === 0
         ? <h3>You fucked up twice</h3>
         : <ol>
@@ -81,8 +88,12 @@ function Dashboard({ date }) {
             )
           }) }
         </ol>}
-      {/*JSON.stringify(reservations)*/}
-    </main>
+      </main>
+      </Route>
+      <Route path="/reservations/:reservation_id/seat">
+          <SeatReservation tables={tables} />
+      </Route>
+    </Switch>
   );
 }
 
