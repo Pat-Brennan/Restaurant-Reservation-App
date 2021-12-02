@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { listReservations } from "../utils/api";
+import { listReservations, listTables } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import useQuery from "../utils/useQuery";
 import { next, previous } from "../utils/date-time";
@@ -16,6 +16,8 @@ function Dashboard({ date }) {
   const query = useQuery();
   const [reservations, setReservations] = useState([]);
   const [reservationsError, setReservationsError] = useState(null);
+  const [tables, setTables] = useState([]);
+  const [tablesError, setTablesError] = useState(null);
 
   if (query.get("date")) {
     date = query.get("date");
@@ -29,6 +31,9 @@ function Dashboard({ date }) {
     listReservations({ date }, abortController.signal)
       .then(setReservations)
       .catch(setReservationsError);
+    listTables(abortController.signal)
+      .then(setTables)
+      .catch(setTablesError);
     return () => abortController.abort();
   }
 
@@ -64,6 +69,18 @@ function Dashboard({ date }) {
         <button type="button" className="btn btn-secondary" onClick={() => history.push(`/dashboard`)}>Today</button>
       </div>
       <ErrorAlert error={reservationsError} />
+
+      {tables.length === 0
+        ? <h3>You fucked up twice</h3>
+        : <ol>
+          {tables.map(t => {
+            return (
+              <li key={t.table_id}>
+                <p>{t.table_name} -- <span data-table-id-status={t.table_id}>{t.status}</span></p>
+              </li>
+            )
+          }) }
+        </ol>}
       {/*JSON.stringify(reservations)*/}
     </main>
   );

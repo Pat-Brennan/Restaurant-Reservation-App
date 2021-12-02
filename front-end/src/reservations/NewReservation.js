@@ -25,28 +25,12 @@ function NewReservation() {
 
     const submitHandler = (event) => {
         event.preventDefault();
-        // const foundErrors = [];
         createReservation(newReservation)
             .then(() => {
                 history.push(`/dashboard?date=${newReservation.reservation_date}`)
             })
             .catch(setError);
     }
-
-    // function validateFields(foundErrors) {
-    //     for (const field in newReservation) {
-    //         if (newReservation[field] === "") {
-    //             foundErrors.push({
-    //                 message: `${field.split("_").join(" ")} cannot be left blank.`,
-    //             })
-    //         }
-    //     }
-    //     return foundErrors.length === 0;
-    // }
-
-    // function validateDate(foundErrors) {
-        
-    // }
 
     return (
         <>

@@ -68,7 +68,7 @@ function validateData(req, res, next) {
     }
     errors.push("Restaurant closes at 10:30pm. We would like you to have time to enjoy your meal. Please pick an earlier time.")
   }
-  if (!data.people || data.people === 0 || typeof data.people !== "number") {
+  if (!data.people || data.people === 0 || typeof Number(data.people) !== "number") {
     errors.push("Request is missing people")
   }
   if (!data.reservation_time || !isValidTime(data.reservation_time)) {
