@@ -34,10 +34,27 @@ function update(tableId, resId) {
         .returning("*");
 }
 
+function updateReservation(resId, newStatus) {
+    return knex("reservations")
+        .where({ "reservation_id": resId })
+        .update({
+            status: newStatus
+        })
+        .returning("*")
+}
+
+function destroy(table) {
+    return knex("tables")
+        .where({ "table_id": table.table_id })
+        .del();
+}
+
 module.exports = {
     create,
     list,
     read,
     readReservation,
-    update
+    update,
+    updateReservation,
+    delete: destroy,
 }

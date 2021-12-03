@@ -99,6 +99,43 @@ async function reservationExists(req, res, next) {
   })
 }
 
+function validateStatus(req, res, next) {
+  const data = res.locals.data;
+  const validStatus = ["seated", "booked", "finished", "cancelled"];
+  if (validStatus.includes(data.status)) {
+    return next();
+  }
+  next({
+    status: 400,
+    message: "Body of request contains unknown status."
+  })
+}
+
+function resIsFinished(req, res, next) {
+  const reservation = res.locals.foundReservation;
+  if (reservation.status !== "finished") {
+    return next();
+  }
+  next({
+    status: 400,
+    message:"Finished reservation cannot be updated."
+  })
+}
+
+async function update(req, res) {
+  const data = res.locals.data;
+  const resId = res.locals.foundReservation.reservation_id;
+  const result = await service.update(resId, data);
+  res.json({ data: result[0] });
+}
+
+async function updateStatus(req, res) {
+  const resId = res.locals.foundReservation.reservation_id;
+  const status = res.locals.data.status;
+  const data = await service.update(resId, { status });
+  res.json({ data: data[0] });
+}
+
 async function list(req, res) {
   const date = req.query.date;
   const data = await service.list(date);
@@ -122,4 +159,17 @@ module.exports = {
   list: [asyncErrorBoundary(list)],
   create: [hasData, validateData, asyncErrorBoundary(create)],
   read: [asyncErrorBoundary(reservationExists), read],
+  updateStatus: [
+    hasData,
+    asyncErrorBoundary(reservationExists),
+    validateStatus,
+    resIsFinished,
+    asyncErrorBoundary(updateStatus)
+  ],
+  update: [
+    hasData,
+    validateData,
+    asyncErrorBoundary(reservationExists),
+    asyncErrorBoundary(update),
+  ]
 };

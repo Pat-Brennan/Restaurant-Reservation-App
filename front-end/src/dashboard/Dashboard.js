@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useHistory, Route, Switch } from "react-router-dom";
 import { listReservations, listTables } from "../utils/api";
+import { next, previous } from "../utils/date-time";
 import ErrorAlert from "../layout/ErrorAlert";
 import useQuery from "../utils/useQuery";
-import { next, previous } from "../utils/date-time";
-import { useHistory, Route, Switch } from "react-router-dom";
 import SeatReservation from "../reservations/SeatReservation"
+import EditReservation from "../reservations/EditReservation";
+import ListReservations from "../reservations/ListReservations";
+import ListTables from "../tables/ListTables";
 
 /**
  * Defines the dashboard page.
@@ -50,48 +53,21 @@ function Dashboard({ date }) {
             <h4 className="mb-0">Reservations for date: { date }</h4>
           </div>
           <ErrorAlert error={reservationsError} />
-          {reservations.length === 0
-            ? <h3>You fucked up</h3>
-            : <ol>
-            {reservations.map(r => {
-              return (
-                <li key={r.reservation_id}>
-                  <p>{r.first_name} {r.last_name}</p>
-                  <p>{r.mobile_number}</p>
-                  <p>{r.reservation_date}</p>
-                  <p>{r.reservation_time}</p>
-                  <p>{r.people}</p>
-                  <a href={`/reservations/${r.reservation_id}/seat`}>
-                    <button type="buttton" className="btn btn-secondary">
-                      Seat
-                      </button>
-                  </a>
-                  </li>
-                )
-              })}
-          </ol>
-          }
+          <ListReservations reservations={ reservations }/>
       <div>
         <button type="button" className="btn btn-secondary" onClick={() => history.push(`/dashboard?date=${previous(date)}`)}>Previous</button>
         <button type="button" className="btn btn-secondary" onClick={() => history.push(`/dashboard?date=${next(date)}`)}>Next</button>
         <button type="button" className="btn btn-secondary" onClick={() => history.push(`/dashboard`)}>Today</button>
       </div>
-      <ErrorAlert error={tablesError} />
-      {tables.length === 0
-        ? <h3>You fucked up twice</h3>
-        : <ol>
-          {tables.map(t => {
-            return (
-              <li key={t.table_id}>
-                <p>{t.table_name} -- <span data-table-id-status={t.table_id}>{t.status}</span></p>
-              </li>
-            )
-          }) }
-        </ol>}
+          <ErrorAlert error={tablesError} />
+          <ListTables tables={ tables }/>
       </main>
       </Route>
       <Route path="/reservations/:reservation_id/seat">
           <SeatReservation tables={tables} />
+      </Route>
+      <Route path="/reservations/:reservation_id/edit">
+        <EditReservation />
       </Route>
     </Switch>
   );

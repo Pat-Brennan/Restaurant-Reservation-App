@@ -82,6 +82,40 @@ function tableFitsReservation(req, res, next) {
     });
 }
 
+function tableIsFree(req, res, next) {
+    const table = res.locals.table;
+    if (table.status !== "Occupied") {
+        return next();
+    }
+    next({
+        status: 400,
+        message: "Table is already Occupied."
+    })
+}
+
+function tableIsOccupied(req, res, next) {
+    const table = res.locals.table;
+    if (table.status === "Occupied") {
+        return next();
+    } else {
+        next({
+            status: 400,
+            message: "Table is not occupied."
+        })
+    }
+}
+
+function reservationIsSeated(req, res, next) {
+    const reservation = res.locals.reservation;
+    if (reservation.status !== "seated") {
+        return next();
+    }
+    next({
+        status: 400,
+        message: "Reservation is already seated"
+    });
+}
+
 async function create(req, res) {
     const data = req.body.data;
     const newTable = await service.create(data);
@@ -97,7 +131,15 @@ async function update(req, res) {
     const table = res.locals.table;
     const reservation = res.locals.reservation;
     await service.update(table.table_id, reservation.reservation_id);
+    await service.updateReservation(reservation.reservation_id, "seated")
     res.json({});
+}
+
+async function destroy(req, res) {
+    const table = res.locals.table;
+    await service.updateReservation(table.reservation_id, "finished");
+    await service.delete(table);
+    res.sendStatus(200);
 }
 
 module.exports = {
@@ -112,5 +154,12 @@ module.exports = {
         asyncErrorBoundary(reservationExists),
         asyncErrorBoundary(tableExists),
         tableFitsReservation,
-        asyncErrorBoundary(update)]
+        tableIsFree,
+        reservationIsSeated,
+        asyncErrorBoundary(update)],
+    delete: [
+        asyncErrorBoundary(tableExists),
+        tableIsOccupied,
+        asyncErrorBoundary(destroy),
+    ]
 }
