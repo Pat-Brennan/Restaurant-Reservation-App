@@ -12,7 +12,7 @@ function NewReservation() {
         mobile_number: "",
         reservation_date: "",
         reservation_time: "",
-        people: ""
+        people: 1
     });
     const [error, setError] = useState(null);
 

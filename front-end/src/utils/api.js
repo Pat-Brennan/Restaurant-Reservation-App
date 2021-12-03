@@ -144,7 +144,3 @@ export async function updateReservationStatus(resId, newStatus, signal) {
   };
   return await fetchJson(url, options);
 }
-
-
-
-

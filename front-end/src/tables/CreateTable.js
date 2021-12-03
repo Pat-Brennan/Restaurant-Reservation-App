@@ -8,7 +8,7 @@ function CreateTable() {
 
     const initialFormState = {
         table_name: "",
-        capacity: "",
+        capacity: 1,
     };
 
     const [table, setTable] = useState({ ...initialFormState });

@@ -56,6 +56,9 @@ function validateData(req, res, next) {
   if (date - today < 0) {
     errors.push("Please pick a date in the future.")
   }
+  if (!data.reservation_time || !isValidTime(data.reservation_time)) {
+    errors.push("Request is missing reservation_time")
+  }
   if (date.getHours() <= 10) {
     if (date.getHours() === 10 && date.getMinutes() < 30) {
       errors.push("Restaurant opens at 10:30am. Please pick a later time.")
@@ -68,11 +71,9 @@ function validateData(req, res, next) {
     }
     errors.push("Restaurant closes at 10:30pm. We would like you to have time to enjoy your meal. Please pick an earlier time.")
   }
-  if (!data.people || data.people === 0 || typeof Number(data.people) !== "number") {
+  if (!data.people || data.people === 0 || typeof
+    data.people !== "number") {
     errors.push("Request is missing people")
-  }
-  if (!data.reservation_time || !isValidTime(data.reservation_time)) {
-    errors.push("Request is missing reservation_time")
   }
   if (data.status === "seated" || data.status === "finished") {
     errors.push(`Status cannot equal ${data.status}. Status must be 'booked'`)
@@ -109,36 +110,43 @@ function validateStatus(req, res, next) {
     status: 400,
     message: "Body of request contains unknown status."
   })
+  // if (validateStatus === "finished") {
+  //   next({
+  //     status: 400,
+  //     message: "A finished reservation cannot be updated"
+  //   })
+  // }
 }
 
 function resIsFinished(req, res, next) {
-  const reservation = res.locals.foundReservation;
+  const reservation = res.locals.reservation;
   if (reservation.status !== "finished") {
     return next();
   }
   next({
     status: 400,
-    message:"Finished reservation cannot be updated."
+    message:"Reservation with a status of finished cannot be updated."
   })
 }
 
 async function update(req, res) {
   const data = res.locals.data;
-  const resId = res.locals.foundReservation.reservation_id;
+  const resId = res.locals.reservation.reservation_id;
   const result = await service.update(resId, data);
   res.json({ data: result[0] });
 }
 
 async function updateStatus(req, res) {
-  const resId = res.locals.foundReservation.reservation_id;
+  const resId = res.locals.reservation.reservation_id;
   const status = res.locals.data.status;
   const data = await service.update(resId, { status });
-  res.json({ data: data[0] });
+  res.status(200).json({ data: data[0] });
 }
 
 async function list(req, res) {
   const date = req.query.date;
-  const data = await service.list(date);
+  const phone = req.query.mobile_number;
+  const data = await service.list(date, phone);
   res.json({
     data: data,
   });
