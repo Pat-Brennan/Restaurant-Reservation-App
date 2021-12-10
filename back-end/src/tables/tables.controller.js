@@ -139,7 +139,7 @@ async function destroy(req, res) {
     const table = res.locals.table;
     await service.updateReservation(table.reservation_id, "finished");
     await service.delete(table);
-    res.sendStatus(200);
+    res.status(200).json({});
 }
 
 module.exports = {

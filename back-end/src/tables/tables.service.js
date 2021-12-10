@@ -46,7 +46,10 @@ function updateReservation(resId, newStatus) {
 function destroy(table) {
     return knex("tables")
         .where({ "table_id": table.table_id })
-        .del();
+        .update({
+            "status": "Free",
+            "reservation_id": null
+        });
 }
 
 module.exports = {
