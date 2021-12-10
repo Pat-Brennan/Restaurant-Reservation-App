@@ -25,6 +25,7 @@ function NewReservation() {
 
     const submitHandler = (event) => {
         event.preventDefault();
+        newReservation.people = Number(newReservation.people);
         createReservation(newReservation)
             .then(() => {
                 history.push(`/dashboard?date=${newReservation.reservation_date}`)

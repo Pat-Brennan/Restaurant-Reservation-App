@@ -22,7 +22,8 @@ function CreateTable() {
     };
 
     const submitHandler = (event) => {
-        event.preventDefault();
+		event.preventDefault();
+		table.capacity = Number(table.capacity);
         createTable(table)
             .then(() => {
                 history.push("/dashboard");

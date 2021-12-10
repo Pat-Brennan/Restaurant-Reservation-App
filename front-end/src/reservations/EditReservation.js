@@ -35,6 +35,7 @@ function EditReservation() {
 
     const submitHandler = (event) => {
         event.preventDefault();
+        formData.people = Number(formData.people);
         updateReservation(reservationId, formData)
             .then(() => {
                 history.push(`/dashboard?date=${formData.reservation_date}`);
