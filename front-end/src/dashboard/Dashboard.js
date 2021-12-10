@@ -64,7 +64,7 @@ function Dashboard({ date }) {
       </main>
       </Route>
       <Route path="/reservations/:reservation_id/seat">
-          <SeatReservation tables={tables} />
+          <SeatReservation tables={tables} loadDashboard={loadDashboard} />
       </Route>
       <Route path="/reservations/:reservation_id/edit">
         <EditReservation />

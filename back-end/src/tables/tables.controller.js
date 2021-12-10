@@ -130,8 +130,8 @@ async function list(req, res) {
 async function update(req, res) {
     const table = res.locals.table;
     const reservation = res.locals.reservation;
-    await service.update(table.table_id, reservation.reservation_id);
     await service.updateReservation(reservation.reservation_id, "seated")
+    await service.update(table.table_id, reservation.reservation_id);
     res.json({});
 }
 
