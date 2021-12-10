@@ -40,7 +40,7 @@ function SeatReservation({ tables, loadDashboard }) {
             updateTable(table.table_id, reservation.reservation_id)
                 .then(() => {
                     loadDashboard();
-                    history.goBack();
+                    history.push(`/dashboard?date=${reservation.reservation_date}`);
                 })
                 .catch(setError);
         }
