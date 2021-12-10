@@ -4,7 +4,7 @@ import { listReservations } from "../utils/api";
 import ListReservations from "../reservations/ListReservations";
 import ErrorAlert from "../layout/ErrorAlert";
 
-function Search() {
+function SearchByPhone() {
     const [mobile_number, setMobile_number] = useState("");
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState(null);
@@ -50,4 +50,4 @@ function Search() {
     )
 }
 
-export default Search;
+export default SearchByPhone;
