@@ -145,12 +145,9 @@ async function updateStatus(req, res) {
 
 async function list(req, res) {
   const date = req.query.date;
-  console.log(date);
   const phone = req.query.mobile_number;
   const data = await service.list(date, phone);
-  res.json({
-    data: data,
-  });
+  res.json({ data });
 }
 
 async function create(req, res) {
